@@ -32,7 +32,9 @@ class PlaceFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        /*在这里进行判断当前是否已经有存储的城市数据，有就直接跳转*/
+        /*在这里进行判断当前是否已经有存储的城市数据，有就直接跳转
+        * 加多一层判断：只有当PlaceFragment嵌入MainActivity时才会直接跳转，
+        * 解决了在WeatherActivity更换地点无限跳转的问题*/
         if (activity is MainActivity && viewModel.isPlaceSaved()) {
             val place = viewModel.getSavedPlace()
             val intent = Intent(context, WeatherActivity::class.java).apply {
@@ -49,6 +51,8 @@ class PlaceFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         adapter = PlaceAdapter(this, viewModel.placeList)
         recyclerView.adapter = adapter
+
+        /*给搜索栏添加文本变化监听器*/
         searchPlaceEdit.addTextChangedListener { editable ->
             val content = editable.toString()
             if (content.isNotEmpty()) {
@@ -60,6 +64,7 @@ class PlaceFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+
         viewModel.placeLiveData.observe(viewLifecycleOwner, Observer{ result ->
             val places = result.getOrNull()
             if (places != null) {

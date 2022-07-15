@@ -1,5 +1,6 @@
 package com.sunnyweather.android.ui.place;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,13 +63,26 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
                 // 你在使用listView或者recycleView的监听事件时，其中getBindingAdapterPosition()表示A或者B的数据源的单独位置，
                 // getAbsoluteAdapterPosition()负责是（AB）中的位置。
                 Place place = placeList.get(position);
-                Intent intent = new Intent(parent.getContext(), WeatherActivity.class);
-                intent.putExtra("location_lng", place.getLocation().getLng());
-                intent.putExtra("location_lat", place.getLocation().getLat());
-                intent.putExtra("place_name", place.getName());
-                /*在跳转前线保存这个城市*/
+                Activity activity = fragment.getActivity();
+                /*对PlaceFragment所在Activity进行判断
+                * JAVA的instanceof和KT的is一样
+                * 如果fragment位于WeatherActivity，则只是更新地点和天气信息
+                * 否则保持原来的逻辑，跳转到WeatherActivity*/
+                if (activity instanceof WeatherActivity) {
+                    ((WeatherActivity) activity).drawerLayout.closeDrawers();
+                    ((WeatherActivity) activity).getViewModel().setLocationLng(place.getLocation().getLng());
+                    ((WeatherActivity) activity).getViewModel().setLocationLat(place.getLocation().getLat());
+                    ((WeatherActivity) activity).getViewModel().setPlaceName(place.getName());
+                    ((WeatherActivity) activity).refreshWeather();
+                } else {
+                    Intent intent = new Intent(parent.getContext(), WeatherActivity.class);
+                    intent.putExtra("location_lng", place.getLocation().getLng());
+                    intent.putExtra("location_lat", place.getLocation().getLat());
+                    intent.putExtra("place_name", place.getName());
+                    fragment.startActivity(intent);
+                }
+                /*保存这个城市*/
                 fragment.getViewModel().savePlace(place);
-                fragment.startActivity(intent);
                 /*结束当前fragment*/
 //                if (fragment.getActivity() != null)
 //                    fragment.getActivity().finish();
