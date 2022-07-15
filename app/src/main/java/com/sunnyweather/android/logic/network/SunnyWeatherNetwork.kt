@@ -9,17 +9,20 @@ import kotlin.coroutines.suspendCoroutine
 
 object SunnyWeatherNetwork {
 
-//    private val weatherService = ServiceCreator.create(WeatherService::class.java)
-//
-//    suspend fun getDailyWeather(lng: String, lat: String) = weatherService.getDailyWeather(lng, lat).await()
-//
-//    suspend fun getRealtimeWeather(lng: String, lat: String) = weatherService.getRealtimeWeather(lng, lat).await()
+    /*在这里对Service接口进行封装*/
+    /*suspend是KT的一个修饰符，表示挂起*/
 
+    /*WeatherService*/
+    private val weatherService = ServiceCreator.create(WeatherService::class.java)
+    suspend fun getDailyWeather(lng: String, lat: String) = weatherService.getDailyWeather(lng, lat).await()
+    suspend fun getRealtimeWeather(lng: String, lat: String) = weatherService.getRealtimeWeather(lng, lat).await()
+
+    /*PlaceService*/
     private val placeService = ServiceCreator.create(PlaceService::class.java)
-
-    //suspend是KT的一个修饰符，表示挂起
     suspend fun searchPlaces(query: String) = placeService.searchPlaces(query).await()
 
+    /*KT的挂起函数写法，定义一个await方法，简化了所有Retrofit的Service实现，
+        所有返回值为Call的Retrofit网络请求接口都可以直接调用*/
     private suspend fun <T> Call<T>.await(): T {
         return suspendCoroutine { continuation ->
             enqueue(object : Callback<T> {
