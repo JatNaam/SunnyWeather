@@ -43,7 +43,7 @@ class PlaceFragment : Fragment() {
                 putExtra("place_name", place.name)
             }
             startActivity(intent)
-//            activity?.finish()
+            activity?.finish()
             return
         }
 
