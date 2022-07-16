@@ -3,10 +3,14 @@ plugins {
 //    id 'org.jetbrains.kotlin.android'
 }
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdk 32
+
+
+    buildFeatures {
+        viewBinding true
+    }
 
     defaultConfig {
         applicationId "com.sunnyweather.android"

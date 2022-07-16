@@ -80,12 +80,12 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
                     intent.putExtra("location_lat", place.getLocation().getLat());
                     intent.putExtra("place_name", place.getName());
                     fragment.startActivity(intent);
+                    /*结束当前fragment*/
+                    if (fragment.getActivity() != null)
+                        fragment.getActivity().finish();
                 }
                 /*保存这个城市*/
                 fragment.getViewModel().savePlace(place);
-                /*结束当前fragment*/
-                if (fragment.getActivity() != null)
-                    fragment.getActivity().finish();
             }
         });
         return holder;
